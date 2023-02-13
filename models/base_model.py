@@ -1,7 +1,7 @@
 #!/usr/bin/python3
-
 from datetime import datetime
 import uuid
+
 from models import storage
 
 
@@ -16,7 +16,7 @@ class BaseModel:
         """
         if kwargs:
             for key, value in kwargs.items():
-                if key == 'created_at' or key == 'updated_at':
+                if isinstance(value, datetime):
                     value = datetime.strptime(value, '%Y-%m-%dT%H:%M:%S.%f')
                 if key != '__class__':
                     setattr(self, key, value)
@@ -37,8 +37,7 @@ class BaseModel:
             str: String representation of
             [<class name>] (self.id) <self.__dict__>
         """
-        return "[{}] ({}) {}".format(
-            type(self).__name__, self.id, self.__dict__)
+        return f"[{type(self).__name__}] ({self.id}) {self.__dict__}"
 
     def save(self):
         """Save update

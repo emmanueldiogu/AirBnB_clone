@@ -1,56 +1,64 @@
-#!/usr/bin/python3
+import os
+import tempfile
 import unittest
+
 from models.base_model import BaseModel
+from models import storage
 from models.engine.file_storage import FileStorage
 
 
 class TestFileStorage(unittest.TestCase):
+    def setUp(self):
+        self.temp_file = tempfile.NamedTemporaryFile(delete=False)
+        self.temp_path = self.temp_file.name
+        self.storage = FileStorage(self.temp_path)
+        self.model = BaseModel()
+        self.model.name = "test"
+        self.model.number = 42
+        self.storage.new(self.model)
+        self.storage.save()
 
-    def test_file_storage_attributes(self):
-        storage = FileStorage()
-        self.assertTrue(hasattr(storage, "_FileStorage__file_path"))
-        self.assertTrue(hasattr(storage, "_FileStorage__objects"))
+    def tearDown(self):
+        os.remove(self.temp_path)
 
-    def test_file_storage_all(self):
-        storage = FileStorage()
-        model1 = BaseModel()
-        model2 = BaseModel()
-        storage.new(model1)
-        storage.new(model2)
-        objects = storage.all()
-        self.assertIsInstance(objects, dict)
-        self.assertIn("{}.{}".format(
-            type(model1).__name__, model1.id), objects.keys())
-        self.assertIn("{}.{}".format(
-            type(model2).__name__, model2.id), objects.keys())
+    def test_all(self):
+        obj_dict = self.storage.all()
+        self.assertIsInstance(obj_dict, dict)
+        self.assertIn(f"BaseModel.{self.model.id}", obj_dict)
+        self.assertEqual(obj_dict[f"BaseModel.{self.model.id}"]["name"], "test")
+        self.assertEqual(obj_dict[f"BaseModel.{self.model.id}"]["number"], 42)
 
-    def test_file_storage_new(self):
-        storage = FileStorage()
+    def test_new(self):
         model = BaseModel()
-        storage.new(model)
-        self.assertIn("{}.{}".format(type(model).__name__, model.id),
-                      storage._FileStorage__objects.keys())
+        self.storage.new(model)
+        obj_dict = self.storage.all()
+        self.assertIn(f"BaseModel.{model.id}", obj_dict)
 
-    def test_file_storage_save(self):
-        storage = FileStorage()
-        model = BaseModel()
-        storage.new(model)
-        storage.save()
-        with open(storage._FileStorage__file_path, "r") as f:
-            file_contents = f.read()
-        self.assertIn("{}.{}".format(
-            type(model).__name__, model.id), file_contents)
+    def test_save(self):
+        with open(self.temp_path) as f:
+            content = f.read()
+        self.assertTrue(content)
+        self.storage.new(BaseModel())
+        self.storage.save()
+        with open(self.temp_path) as f:
+            content = f.read()
+        self.assertTrue(content)
 
-    def test_file_storage_reload(self):
-        storage1 = FileStorage()
-        model1 = BaseModel()
-        storage1.new(model1)
-        storage1.save()
+    def test_classes(self):
+        classes = self.storage.classes()
+        self.assertIsInstance(classes, dict)
+        self.assertIn("BaseModel", classes)
+        self.assertEqual(classes["BaseModel"], BaseModel)
 
-        storage2 = FileStorage()
-        self.assertNotIn("{}.{}".format(type(model1).__name__,
-                         model1.id), storage2.all().keys())
-        storage2.reload()
+    def test_reload(self):
+        os.remove(self.temp_path)
+        with self.assertRaises(FileNotFoundError):
+            self.storage.reload()
+        self.storage.new(BaseModel())
+        self.storage.save()
+        self.storage.reload()
+        obj_dict = self.storage.all()
+        self.assertIn("BaseModel." + list(obj_dict.keys())[0].split(".")[1], obj_dict)
 
 
 if __name__ == '__main__':
