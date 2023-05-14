@@ -1,0 +1,6 @@
+.vscode/
+*-main.py
+__pycache__/
+*.pyc
+*.swp
+file.json
