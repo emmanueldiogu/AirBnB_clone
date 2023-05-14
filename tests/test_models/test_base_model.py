@@ -2,6 +2,7 @@ import unittest
 from models.base_model import BaseModel
 from datetime import datetime
 
+
 class TestBaseModel(unittest.TestCase):
     def test_init(self):
         bm = BaseModel()
@@ -32,6 +33,7 @@ class TestBaseModel(unittest.TestCase):
         self.assertTrue("updated_at" in bm_dict)
         self.assertTrue("__class__" in bm_dict)
         self.assertEqual(bm_dict["__class__"], "BaseModel")
+
 
 if __name__ == "__main__":
     unittest.main()
