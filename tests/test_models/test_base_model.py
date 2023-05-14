@@ -1,10 +1,22 @@
+#!/usr/bin/python3
+"""
+Test for BaseModel class
+"""
+
 import unittest
 from models.base_model import BaseModel
 from datetime import datetime
 
 
 class TestBaseModel(unittest.TestCase):
+    """
+    Test cases for BaseModel class
+    """
+
     def test_init(self):
+        """
+        Test case for BaseModel __init__ method
+        """
         bm = BaseModel()
         self.assertTrue(hasattr(bm, "id"))
         self.assertTrue(hasattr(bm, "created_at"))
@@ -14,11 +26,17 @@ class TestBaseModel(unittest.TestCase):
         self.assertIsInstance(bm.updated_at, datetime)
 
     def test_str(self):
+        """
+        Test case for BaseModel __str__ method
+        """
         bm = BaseModel()
         bm_str = str(bm)
         self.assertIsInstance(bm_str, str)
 
     def test_to_dict(self):
+        """
+        Test case for BaseModel to_dict method
+        """
         bm = BaseModel()
         bm_dict = bm.to_dict()
         self.assertIsInstance(bm_dict, dict)
