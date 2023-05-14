@@ -18,12 +18,6 @@ class TestBaseModel(unittest.TestCase):
         bm_str = str(bm)
         self.assertIsInstance(bm_str, str)
 
-    # def test_save(self):
-    #     bm = BaseModel()
-    #     updated_at = bm.updated_at
-    #     bm.save()
-    #     self.assertNotEqual(updated_at, bm.updated_at)
-
     def test_to_dict(self):
         bm = BaseModel()
         bm_dict = bm.to_dict()
