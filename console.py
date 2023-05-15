@@ -1,22 +1,33 @@
+#!/usr/bin/env python3
+"""
+This module contains the entry point of the command interpreter.
+"""
+
 import cmd
 
 class HBNBCommand(cmd.Cmd):
-     prompt = '(hbnb) '
+    """
+    This class implements the command interpreter.
+    """
+    prompt = "(hbnb) "
 
-      def do_quit(self, arg):
-           return True
+    def do_quit(self, arg):
+        """
+        Quit command to exit the program.
+        """
+        return True
 
     def do_EOF(self, arg):
-         return True
+        """
+        Exit the program with EOF (Ctrl-D).
+        """
+        return True
 
-     def emptyline(self):
-         print("Exit the program")
-
-    def help_EOF(self):
-        print("Exit the program")
-
-    def help_help(self):
-        print("Display available commands")
+    def emptyline(self):
+        """
+        Do nothing when an empty line is entered.
+        """
+        pass
 
 if __name__ == '__main__':
     HBNBCommand().cmdloop()
